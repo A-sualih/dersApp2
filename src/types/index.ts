@@ -3,6 +3,8 @@ export interface DriveFile {
     name: string;
     type: 'audio' | 'pdf';
     url: string;
+    /** The PDF page where this audio lesson starts. Set manually per file. */
+    pdfPage?: number;
 }
 
 export interface FileStatus {

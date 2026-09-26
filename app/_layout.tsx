@@ -8,16 +8,16 @@ import 'react-native-reanimated';
 import { MiniPlayer } from '../src/components/MiniPlayer';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AudioProvider } from '../src/context/AudioContext';
 import { ThemeProvider as AppThemeProvider } from '@/src/context/ThemeContext';
+import { AudioProvider } from '../src/context/AudioContext';
 
+import { BackgroundTaskOverlay } from '../src/components/background/BackgroundTaskOverlay';
+import { FloatingProgressWidget } from '../src/components/background/FloatingProgressWidget';
+import { BackgroundTaskProvider } from '../src/context/BackgroundTaskContext';
 import { NoteProvider } from '../src/context/NoteContext';
 import { UserProvider } from '../src/context/UserContext';
-import { useOTAUpdate } from '../src/hooks/useOTAUpdate';
-import { BackgroundTaskProvider } from '../src/context/BackgroundTaskContext';
-import { FloatingProgressWidget } from '../src/components/background/FloatingProgressWidget';
-import { BackgroundTaskOverlay } from '../src/components/background/BackgroundTaskOverlay';
 import { useAppLifecycle } from '../src/hooks/useAppLifecycle';
+import { useOTAUpdate } from '../src/hooks/useOTAUpdate';
 
 
 export const unstable_settings = {
@@ -48,10 +48,14 @@ function LayoutContent() {
 
   React.useEffect(() => {
     console.log(`[Root] App is in state: ${currentState}`);
+  }, [currentState]);
+
+  React.useEffect(() => {
+    // Only check for OTA updates once on initial mount, not on every foreground/background transition
     if (!__DEV__) {
       onFetchUpdateAsync();
     }
-  }, [currentState]);
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

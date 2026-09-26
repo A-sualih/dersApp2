@@ -18,12 +18,33 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
     const colorScheme = useColorScheme() ?? 'light';
     const [pdfBase64, setPdfBase64] = useState<string | null>(null);
 
+    /**
+     * Google Drive download links for large files return an HTML virus-scan
+     * confirmation page instead of the raw PDF. Convert to the direct export
+     * URL with confirm=t to bypass that, or fall back to the preview embed.
+     */
+    const sanitizeDriveUrl = (rawUrl: string): string => {
+        // Already a local file — leave as-is
+        if (rawUrl.startsWith('file://')) return rawUrl;
+
+        // uc?id=XXX&export=download  →  uc?id=XXX&export=download&confirm=t
+        const ucMatch = rawUrl.match(/drive\.google\.com\/uc\?.*id=([^&]+)/);
+        if (ucMatch) {
+            const fileId = ucMatch[1];
+            return `https://drive.google.com/uc?id=${fileId}&export=download&confirm=t`;
+        }
+
+        return rawUrl;
+    };
+
+    const effectiveUrl = sanitizeDriveUrl(url);
+
     useEffect(() => {
         const loadLocalFile = async () => {
-            if (url.startsWith('file://')) {
+            if (effectiveUrl.startsWith('file://')) {
                 try {
                     // Read file as base64 to bypass WebView security restrictions on local files
-                    const base64 = await FileSystem.readAsStringAsync(url, {
+                    const base64 = await FileSystem.readAsStringAsync(effectiveUrl, {
                         encoding: FileSystem.EncodingType.Base64,
                     });
                     setPdfBase64(base64);
@@ -36,7 +57,7 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
             }
         };
         loadLocalFile();
-    }, [url]);
+    }, [effectiveUrl]);
 
     // Apply zoom when it changes
     useEffect(() => {
@@ -48,6 +69,8 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
             `);
         }
     }, [zoom]);
+
+    const effectiveRemoteUrl = remoteUrl ? sanitizeDriveUrl(remoteUrl) : '';
 
     const htmlContent = `
         <!DOCTYPE html>
@@ -105,7 +128,7 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
             <div id="loading">Loading PDF...</div>
             <div id="viewer"></div>
             <script>
-                const pdfUrl = "${url}";
+                const pdfUrl = "${effectiveUrl}";
                 const pdfBase64 = ${pdfBase64 ? JSON.stringify(pdfBase64) : 'null'};
                 const targetPage = ${targetPage};
                 const isDark = ${colorScheme === 'dark'};
@@ -146,7 +169,7 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
                         console.error('PDF loading error:', e);
                         
                         // Fallback to remote if first attempt (base64 or local url) fails
-                        const remoteUrl = "${remoteUrl}";
+                        const remoteUrl = "${effectiveRemoteUrl}";
                         if (remoteUrl && remoteUrl !== "undefined" && pdfUrl !== remoteUrl) {
                             console.log('Falling back to remote URL:', remoteUrl);
                             document.getElementById('loading').innerText = 'Local load failed. Fetching remote...';

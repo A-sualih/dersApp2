@@ -1,84 +1,97 @@
-import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '../context/ThemeContext';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Category } from '../types';
 
 interface CategoryCardProps {
     category: Category;
     onPress: () => void;
+    index?: number;
 }
 
-export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onPress }) => {
-    const { colorScheme } = useTheme();
-    const theme = Colors[colorScheme];
+// Each category gets its own vivid color pair
+const CARD_THEMES = [
+    { grad: ['#1a1a2e', '#16213e', '#0f3460'] as const, accent: '#e94560', icon: 'book' },
+    { grad: ['#0d1b2a', '#1b4332', '#2d6a4f'] as const, accent: '#52b788', icon: 'headset' },
+    { grad: ['#1a0533', '#2d1b69', '#11998e'] as const, accent: '#a78bfa', icon: 'musical-notes' },
+    { grad: ['#1a1a1a', '#2c3e50', '#3498db'] as const, accent: '#60a5fa', icon: 'library' },
+    { grad: ['#2d1515', '#7b2d00', '#c05621'] as const, accent: '#fb923c', icon: 'book-outline' },
+    { grad: ['#0a1628', '#1e3a5f', '#2563eb'] as const, accent: '#38bdf8', icon: 'headset-outline' },
+    { grad: ['#1a0a2e', '#4a1942', '#c026d3'] as const, accent: '#e879f9', icon: 'musical-note' },
+    { grad: ['#0f2027', '#203a43', '#2c5364'] as const, accent: '#34d399', icon: 'library-outline' },
+    { grad: ['#1f1c2c', '#928dab', '#4a4a8a'] as const, accent: '#c7d2fe', icon: 'book' },
+    { grad: ['#0b3d0b', '#1a5c1a', '#2e7d32'] as const, accent: '#86efac', icon: 'headset' },
+    { grad: ['#2d0a0a', '#7f1d1d', '#b91c1c'] as const, accent: '#fca5a5', icon: 'musical-notes' },
+    { grad: ['#0c1445', '#1a237e', '#283593'] as const, accent: '#93c5fd', icon: 'library' },
+    { grad: ['#1a2a1a', '#2d5a27', '#4caf50'] as const, accent: '#a3e635', icon: 'book-outline' },
+];
 
-    const TEXT_COLOR = '#FFFFFF';
-    const SECONDARY_TEXT_COLOR = '#bbf7d0'; // Light green text for secondary
-    const ACCENT_COLOR = '#4ade80'; // Bright green
+export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onPress, index = 0 }) => {
+    const theme = CARD_THEMES[index % CARD_THEMES.length];
+    const audioCount = category.files.filter(f => f.type === 'audio').length;
+    const pdfCount = category.files.filter(f => f.type === 'pdf').length;
 
     return (
         <TouchableOpacity
-            style={[
-                styles.card,
-                {
-                    borderColor: 'rgba(74, 222, 128, 0.2)', // Subtle green border
-                    shadowColor: '#000'
-                }
-            ]}
-            activeOpacity={0.7}
+            style={styles.card}
+            activeOpacity={0.85}
             onPress={onPress}
         >
-            {/* Premium Black-Green Gradient Background */}
             <LinearGradient
-                colors={['#020617', '#14532d', '#020617']}
+                colors={theme.grad}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
             />
 
-            {/* Decorative Pattern / Shine */}
-            <LinearGradient
-                colors={['transparent', 'rgba(74, 222, 128, 0.05)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[StyleSheet.absoluteFill, { transform: [{ skewX: '-20deg' }] }]}
-            />
+            {/* Glowing accent strip on left */}
+            <View style={[styles.accentStrip, { backgroundColor: theme.accent }]} />
 
-            {/* Decorative Background Elements */}
-            <View style={styles.decorativeContainer} pointerEvents="none">
-                <Text style={[styles.arabicText]}>
-                    إرشاد
-                </Text>
-                <Ionicons
-                    name="book"
-                    size={120}
-                    color={ACCENT_COLOR}
-                    style={styles.watermarkIcon}
-                />
+            {/* Watermark icon */}
+            <View style={styles.watermark} pointerEvents="none">
+                <Ionicons name={theme.icon as any} size={90} color={theme.accent} style={{ opacity: 0.07 }} />
             </View>
 
-            <View style={[styles.contentContainer]}>
-                <View style={[styles.iconContainer, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                    <Ionicons name="book" size={28} color={ACCENT_COLOR} />
+            <View style={styles.content}>
+                {/* Icon */}
+                <View style={[styles.iconWrap, { backgroundColor: theme.accent + '22', borderColor: theme.accent + '44' }]}>
+                    <Ionicons name={theme.icon as any} size={26} color={theme.accent} />
                 </View>
-                <View style={styles.cardContent}>
-                    <Text style={[styles.title, { color: TEXT_COLOR }]}>{category.title}</Text>
-                    {category.description && (
-                        <Text style={[styles.description, { color: SECONDARY_TEXT_COLOR }]} numberOfLines={1}>
+
+                {/* Text */}
+                <View style={styles.textWrap}>
+                    <Text style={styles.title} numberOfLines={1}>{category.title}</Text>
+                    {category.description ? (
+                        <Text style={[styles.desc, { color: theme.accent + 'cc' }]} numberOfLines={1}>
                             {category.description}
                         </Text>
-                    )}
-                    <View style={styles.badge}>
-                        <Text style={[styles.fileCount, { color: ACCENT_COLOR }]}>
-                            {category.files.length} {category.files.length === 1 ? 'Lesson' : 'Lessons'}
-                        </Text>
+                    ) : null}
+
+                    {/* Pills */}
+                    <View style={styles.pills}>
+                        {audioCount > 0 && (
+                            <View style={[styles.pill, { backgroundColor: theme.accent + '25' }]}>
+                                <Ionicons name="headset-outline" size={11} color={theme.accent} />
+                                <Text style={[styles.pillText, { color: theme.accent }]}>
+                                    {audioCount} ኦዲዮ
+                                </Text>
+                            </View>
+                        )}
+                        {pdfCount > 0 && (
+                            <View style={[styles.pill, { backgroundColor: '#ffffff18' }]}>
+                                <Ionicons name="document-text-outline" size={11} color="#fff" />
+                                <Text style={[styles.pillText, { color: '#ffffffcc' }]}>
+                                    {pdfCount} PDF
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
-                <View style={styles.arrowContainer}>
-                    <Ionicons name="chevron-forward" size={20} color={SECONDARY_TEXT_COLOR} />
+
+                {/* Arrow */}
+                <View style={[styles.arrow, { backgroundColor: theme.accent + '22', borderColor: theme.accent + '44' }]}>
+                    <Ionicons name="chevron-forward" size={18} color={theme.accent} />
                 </View>
             </View>
         </TouchableOpacity>
@@ -88,86 +101,84 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onPress })
 const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
-        marginVertical: 8,
+        marginVertical: 6,
         borderRadius: 20,
-        borderWidth: 1,
-        elevation: 4,
+        overflow: 'hidden',
+        minHeight: 100,
+        elevation: 8,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.4,
         shadowRadius: 12,
-        overflow: 'hidden',
-        minHeight: 120,
     },
-    decorativeContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-    },
-    arabicText: {
+    accentStrip: {
         position: 'absolute',
-        top: -10,
-        right: 20,
-        fontSize: 100,
-        fontFamily: Platform.OS === 'ios' ? 'System' : 'serif',
-        fontWeight: 'bold',
-        opacity: 0.03, // Subtle
-        color: '#fff',
-        transform: [{ rotate: '5deg' }],
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 4,
+        borderTopLeftRadius: 20,
+        borderBottomLeftRadius: 20,
     },
-    watermarkIcon: {
+    watermark: {
         position: 'absolute',
-        right: -30,
-        bottom: -30,
-        opacity: 0.05,
-        transform: [{ rotate: '-15deg' }],
+        right: 50,
+        top: '50%',
+        marginTop: -45,
     },
-    contentContainer: {
+    content: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        zIndex: 1,
+        paddingHorizontal: 18,
+        paddingVertical: 16,
     },
-    iconContainer: {
-        width: 56,
-        height: 56,
+    iconWrap: {
+        width: 52,
+        height: 52,
         borderRadius: 16,
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
+        marginRight: 14,
     },
-    cardContent: {
+    textWrap: {
         flex: 1,
     },
     title: {
-        fontSize: 18,
-        fontWeight: '700',
-        marginBottom: 4,
-        letterSpacing: -0.5,
+        fontSize: 17,
+        fontWeight: '800',
+        color: '#ffffff',
+        letterSpacing: -0.3,
+        marginBottom: 3,
     },
-    description: {
-        fontSize: 14,
-        marginBottom: 8,
-        lineHeight: 20,
-    },
-    badge: {
-        alignSelf: 'flex-start',
-        paddingHorizontal: 8,
-        paddingVertical: 2,
-        borderRadius: 6,
-        backgroundColor: 'rgba(74, 222, 128, 0.1)', // Green tint
-    },
-    fileCount: {
+    desc: {
         fontSize: 12,
-        fontWeight: '600',
+        marginBottom: 8,
+        lineHeight: 16,
     },
-    arrowContainer: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    pills: {
+        flexDirection: 'row',
+        gap: 6,
+    },
+    pill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 20,
+    },
+    pillText: {
+        fontSize: 11,
+        fontWeight: '700',
+    },
+    arrow: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 8,
+        marginLeft: 10,
     },
 });

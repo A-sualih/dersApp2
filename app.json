@@ -79,6 +79,9 @@
     "owner": "sualih",
     "updates": {
       "url": "https://u.expo.dev/9c73d4f7-915e-4f42-a950-64a69d27a37d"
+    },
+    "developer": {
+      "tool": "expo-cli"
     }
   }
 }

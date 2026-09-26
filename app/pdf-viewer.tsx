@@ -12,18 +12,23 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PdfViewer() {
-    const { url, remoteUrl, name } = useLocalSearchParams<{ url: string; remoteUrl: string; name: string }>();
+    const { url, remoteUrl, name, targetPage: targetPageParam } = useLocalSearchParams<{ url: string; remoteUrl: string; name: string; targetPage?: string }>();
     const router = useRouter();
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [isPageLoaded, setIsPageLoaded] = useState(false);
-    const [notesModalVisible, setNotesModalVisible] = useState(false);
 
+    // Initialise directly from param so NativePdf gets the right page on first render
+    const initialPage = targetPageParam ? Math.max(1, parseInt(targetPageParam, 10) || 1) : 1;
+    const [currentPage, setCurrentPage] = useState<number>(initialPage);
+    const [isPageLoaded, setIsPageLoaded] = useState(!!targetPageParam); // skip AsyncStorage if param given
+    const [notesModalVisible, setNotesModalVisible] = useState(false);
 
     const colorScheme = useColorScheme() ?? 'light';
     const theme = Colors[colorScheme];
     const persistenceKey = `pdf_res_page_${name}`;
 
     useEffect(() => {
+        // If a page was passed via nav params, don't overwrite it with the saved page
+        if (targetPageParam) return;
+
         const loadPage = async () => {
             try {
                 const saved = await AsyncStorage.getItem(persistenceKey);

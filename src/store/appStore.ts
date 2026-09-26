@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '../services/storage';
 
 interface MediaProgress {
@@ -8,21 +8,32 @@ interface MediaProgress {
     lastUpdated: number;
 }
 
+export interface RecentItem {
+    id: string;
+    name: string;
+    type: 'audio' | 'pdf';
+    url: string;
+    categoryId: string;
+    categoryTitle: string;
+    accessedAt: number;
+}
+
+const MAX_RECENT = 10;
+
 interface AppState {
-    // Navigation State
     lastScreen: string | null;
     setLastScreen: (screen: string) => void;
 
-    // Media Progress State
     progress: Record<string, MediaProgress>;
     saveProgress: (id: string, position: number, duration: number) => void;
     getProgress: (id: string) => MediaProgress | null;
 
-    // UI/Settings State
+    recentItems: RecentItem[];
+    addRecentItem: (item: Omit<RecentItem, 'accessedAt'>) => void;
+
     themePreference: 'light' | 'dark' | 'system';
     setThemePreference: (theme: 'light' | 'dark' | 'system') => void;
 
-    // Background State
     isAppActive: boolean;
     setAppActive: (active: boolean) => void;
 }
@@ -38,15 +49,23 @@ export const useAppStore = create<AppState>()(
                 set((state) => ({
                     progress: {
                         ...state.progress,
-                        [id]: {
-                            position,
-                            duration,
-                            lastUpdated: Date.now(),
-                        },
+                        [id]: { position, duration, lastUpdated: Date.now() },
                     },
                 }));
             },
             getProgress: (id) => get().progress[id] || null,
+
+            recentItems: [],
+            addRecentItem: (item) => {
+                set((state) => {
+                    const filtered = state.recentItems.filter((r) => r.id !== item.id);
+                    const updated = [
+                        { ...item, accessedAt: Date.now() },
+                        ...filtered,
+                    ].slice(0, MAX_RECENT);
+                    return { recentItems: updated };
+                });
+            },
 
             themePreference: 'dark',
             setThemePreference: (theme) => set({ themePreference: theme }),
@@ -61,6 +80,7 @@ export const useAppStore = create<AppState>()(
                 lastScreen: state.lastScreen,
                 progress: state.progress,
                 themePreference: state.themePreference,
+                recentItems: state.recentItems,
             }),
         }
     )

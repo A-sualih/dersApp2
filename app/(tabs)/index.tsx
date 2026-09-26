@@ -1,247 +1,446 @@
-import { Colors } from '@/constants/theme';
 import { CategoryCard } from '@/src/components/CategoryCard';
 import { CATEGORIES } from '@/src/constants/mockData';
-import { useTheme } from '@/src/context/ThemeContext';
+import { useBackgroundTasks } from '@/src/context/BackgroundTaskContext';
+import { RecentItem, useAppStore } from '@/src/store/appStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { FlatList, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  FlatList,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useBackgroundTasks } from '@/src/context/BackgroundTaskContext';
-import { useAppStore } from '@/src/store/appStore';
 
-export default function App() {
-  const router = useRouter();
-  const { colorScheme } = useTheme();
-  const setLastScreen = useAppStore(state => state.setLastScreen);
-  
-  // Track last screen for persistence
-  useEffect(() => {
-    setLastScreen('home');
-  }, []);
+// ─── Recent item card ─────────────────────────────────────────────────────────
+const RECENT_COLORS = [
+    { bg: ['#1a1a2e', '#e94560'] as const, icon: '#e94560' },
+    { bg: ['#0d1b2a', '#52b788'] as const, icon: '#52b788' },
+    { bg: ['#1a0533', '#a78bfa'] as const, icon: '#a78bfa' },
+    { bg: ['#0a1628', '#38bdf8'] as const, icon: '#38bdf8' },
+    { bg: ['#2d1515', '#fb923c'] as const, icon: '#fb923c' },
+    { bg: ['#1a0a2e', '#e879f9'] as const, icon: '#e879f9' },
+];
 
-  const theme = useMemo(() => ({ 
-    ...Colors['dark'], 
-    background: 'transparent', 
-    text: '#FFFFFF', 
-    secondaryText: '#bbf7d0', 
-    tint: '#4ade80', 
-    border: 'rgba(74, 222, 128, 0.2)' 
-  }), []);
+function getRecentColor(index: number) {
+    return RECENT_COLORS[index % RECENT_COLORS.length];
+}
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+const RecentCard: React.FC<{ item: RecentItem; index: number; onPress: () => void }> = ({
+    item,
+    index,
+    onPress,
+}) => {
+    const color = getRecentColor(index);
+    const isAudio = item.type === 'audio';
+    const label = item.name.replace(/\.mp3$/i, '').replace(/\.pdf$/i, '');
 
-  const { runSimulation } = useBackgroundTasks();
-
-  const handleSync = useCallback(() => {
-    runSimulation('Syncing Library...', 'sync');
-  }, [runSimulation]);
-
-  const allTracks = useMemo(() => 
-    CATEGORIES.flatMap(cat =>
-      cat.files.filter(f => f.type === 'audio').map(f => ({ ...f, categoryTitle: cat.title }))
-    ), []);
-
-  const filteredTracks = useMemo(() => 
-    searchQuery.trim()
-      ? allTracks.filter(track =>
-        track.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        track.categoryTitle.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      : [], [searchQuery, allTracks]);
-
-  const renderSearchItem = useCallback(({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={[styles.searchResultItem, { borderBottomColor: theme.border }]}
-      onPress={() => {
-        router.push({
-          pathname: '/derse-detail',
-          params: { categoryId: CATEGORIES.find(c => c.files.some(f => f.id === item.id))?.id }
-        });
-      }}
-    >
-      <View style={[styles.resultIcon, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-        <Ionicons name="musical-note" size={20} color={theme.tint} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.resultTitle, { color: theme.text }]} numberOfLines={1}>{item.name}</Text>
-        <Text style={[styles.resultCategory, { color: theme.secondaryText }]}>{item.categoryTitle}</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={20} color={theme.border} />
-    </TouchableOpacity>
-  ), [theme, router]);
-
-  const renderCategoryItem = useCallback(({ item }: { item: any }) => (
-    <CategoryCard
-      category={item}
-      onPress={() => router.push({
-        pathname: '/derse-detail',
-        params: { categoryId: item.id }
-      })}
-    />
-  ), [router]);
-
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <LinearGradient
-        colors={['#020617', '#14532d', '#020617']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <View style={[styles.header, { borderBottomColor: theme.border }]}>
-          <View style={styles.headerContent}>
-            {isSearching ? (
-              <View style={styles.searchContainer}>
-                <TouchableOpacity onPress={() => { setIsSearching(false); setSearchQuery(''); }}>
-                  <Ionicons name="arrow-back" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.searchInput, { color: theme.text, backgroundColor: 'rgba(255,255,255,0.1)' }]}
-                  placeholder="Search tracks..."
-                  placeholderTextColor={theme.secondaryText}
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  autoFocus
+    return (
+        <TouchableOpacity style={styles.recentCard} onPress={onPress} activeOpacity={0.82}>
+            <LinearGradient
+                colors={color.bg}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+            />
+            {/* Watermark */}
+            <Ionicons
+                name={isAudio ? 'musical-notes' : 'book'}
+                size={56}
+                color={color.icon}
+                style={styles.recentWatermark}
+            />
+            {/* Type badge */}
+            <View style={[styles.recentTypeBadge, { backgroundColor: color.icon + '28' }]}>
+                <Ionicons
+                    name={isAudio ? 'headset-outline' : 'document-text-outline'}
+                    size={11}
+                    color={color.icon}
                 />
-              </View>
-            ) : (
-              <>
-                <Text style={[styles.headerTitle, { color: theme.text }]}>ደርሶች</Text>
-                <View style={styles.headerActions}>
-                  <TouchableOpacity onPress={() => setIsSearching(true)} style={styles.iconButton}>
-                    <Ionicons name="search" size={24} color={theme.text} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => router.push('/about')} style={styles.iconButton}>
-                    <Ionicons
-                      name="person-circle-outline"
-                      size={24}
-                      color={theme.text}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleSync} style={styles.iconButton}>
-                    <Ionicons name="cloud-upload-outline" size={24} color={theme.tint} />
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        </View>
+                <Text style={[styles.recentTypeTxt, { color: color.icon }]}>
+                    {isAudio ? 'ኦዲዮ' : 'PDF'}
+                </Text>
+            </View>
+            {/* Title */}
+            <Text style={styles.recentTitle} numberOfLines={2}>{label}</Text>
+            {/* Category */}
+            <Text style={styles.recentCat} numberOfLines={1}>{item.categoryTitle}</Text>
+        </TouchableOpacity>
+    );
+};
 
-        {isSearching && searchQuery.trim() !== '' ? (
-          <FlatList
-            data={filteredTracks}
-            keyExtractor={(item) => item.id}
-            renderItem={renderSearchItem}
-            contentContainerStyle={styles.listContent}
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-            windowSize={5}
-            removeClippedSubviews={true}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Text style={{ color: theme.secondaryText }}>No tracks found matching "{searchQuery}"</Text>
-              </View>
-            }
-          />
-        ) : (
-          <FlatList
-            data={CATEGORIES}
-            keyExtractor={(item) => item.id}
-            renderItem={renderCategoryItem}
-            contentContainerStyle={styles.listContent}
-            initialNumToRender={6}
-            maxToRenderPerBatch={10}
-            windowSize={5}
-            removeClippedSubviews={true}
-          />
-        )}
-      </SafeAreaView>
-    </View>
-  );
+// ─── Home screen ──────────────────────────────────────────────────────────────
+export default function App() {
+    const router = useRouter();
+    const setLastScreen = useAppStore(state => state.setLastScreen);
+    const recentItems = useAppStore(state => state.recentItems);
+
+    useEffect(() => { setLastScreen('home'); }, []);
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
+    const { runSimulation } = useBackgroundTasks();
+    const handleSync = useCallback(() => runSimulation('Syncing Library...', 'sync'), [runSimulation]);
+
+    const totalAudio = useMemo(
+        () => CATEGORIES.reduce((sum, c) => sum + c.files.filter(f => f.type === 'audio').length, 0), []
+    );
+    const totalPdf = useMemo(
+        () => CATEGORIES.reduce((sum, c) => sum + c.files.filter(f => f.type === 'pdf').length, 0), []
+    );
+
+    const allTracks = useMemo(() =>
+        CATEGORIES.flatMap(cat =>
+            cat.files.filter(f => f.type === 'audio').map(f => ({ ...f, categoryTitle: cat.title }))
+        ), []);
+
+    const filteredTracks = useMemo(() =>
+        searchQuery.trim()
+            ? allTracks.filter(t =>
+                t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.categoryTitle.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            : [],
+        [searchQuery, allTracks]
+    );
+
+    const handleRecentPress = useCallback((item: RecentItem) => {
+        if (item.type === 'pdf') {
+            // Find the local URI if downloaded, otherwise use remote URL
+            const { checkFileExists, getLocalUri } = require('@/src/utils/fileSystem');
+            checkFileExists(item.name).then((exists: boolean) => {
+                const localUri = exists ? getLocalUri(item.name) : null;
+                router.push({
+                    pathname: '/pdf-viewer',
+                    params: {
+                        url: localUri ?? item.url,
+                        remoteUrl: item.url,
+                        name: item.name,
+                    },
+                });
+            });
+        } else {
+            // Audio — open the category detail and auto-play the specific file
+            router.push({
+                pathname: '/derse-detail',
+                params: { categoryId: item.categoryId, fileId: item.id },
+            });
+        }
+    }, [router]);
+
+    const renderSearchItem = useCallback(({ item }: { item: any }) => (
+        <TouchableOpacity
+            style={styles.searchResultItem}
+            activeOpacity={0.75}
+            onPress={() => {
+                const cat = CATEGORIES.find(c => c.files.some(f => f.id === item.id));
+                router.push({ pathname: '/derse-detail', params: { categoryId: cat?.id } });
+            }}
+        >
+            <View style={styles.searchResultIcon}>
+                <Ionicons name="musical-note" size={18} color="#4ade80" />
+            </View>
+            <View style={{ flex: 1 }}>
+                <Text style={styles.searchResultTitle} numberOfLines={1}>{item.name}</Text>
+                <Text style={styles.searchResultSub}>{item.categoryTitle}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
+        </TouchableOpacity>
+    ), [router]);
+
+    const renderCategoryItem = useCallback(({ item, index }: { item: any; index: number }) => (
+        <CategoryCard
+            category={item}
+            index={index}
+            onPress={() => router.push({ pathname: '/derse-detail', params: { categoryId: item.id } })}
+        />
+    ), [router]);
+
+    // Header + recent + stats rendered as FlatList ListHeaderComponent
+    const ListHeader = useMemo(() => (
+        <>
+            {/* Stats banner */}
+            <View style={styles.statsBanner}>
+                <LinearGradient
+                    colors={['#0f3460', '#16213e', '#1a1a2e']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.statItem}>
+                    <Ionicons name="library-outline" size={22} color="#60a5fa" />
+                    <Text style={styles.statNumber}>{CATEGORIES.length}</Text>
+                    <Text style={styles.statLabel}>ምድቦች</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                    <Ionicons name="headset-outline" size={22} color="#4ade80" />
+                    <Text style={styles.statNumber}>{totalAudio}</Text>
+                    <Text style={styles.statLabel}>ኦዲዮ</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                    <Ionicons name="document-text-outline" size={22} color="#f472b6" />
+                    <Text style={styles.statNumber}>{totalPdf}</Text>
+                    <Text style={styles.statLabel}>ኪታቦች</Text>
+                </View>
+            </View>
+
+            {/* Recent section */}
+            {recentItems.length > 0 && (
+                <View style={styles.recentSection}>
+                    <View style={styles.sectionRow}>
+                        <View style={styles.sectionLabelRow}>
+                            <View style={styles.sectionDot} />
+                            <Text style={styles.sectionTitle}>የቅርብ ጊዜ</Text>
+                        </View>
+                        <Text style={styles.sectionSub}>{recentItems.length} ንጥሎች</Text>
+                    </View>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.recentScroll}
+                    >
+                        {recentItems.map((item, idx) => (
+                            <RecentCard
+                                key={item.id}
+                                item={item}
+                                index={idx}
+                                onPress={() => handleRecentPress(item)}
+                            />
+                        ))}
+                    </ScrollView>
+                </View>
+            )}
+
+            {/* Categories label */}
+            <View style={styles.sectionRow}>
+                <View style={styles.sectionLabelRow}>
+                    <View style={[styles.sectionDot, { backgroundColor: '#60a5fa' }]} />
+                    <Text style={styles.sectionTitle}>ሁሉም ምድቦች</Text>
+                </View>
+                <View style={styles.sectionBadge}>
+                    <Text style={styles.sectionBadgeText}>{CATEGORIES.length}</Text>
+                </View>
+            </View>
+        </>
+    ), [recentItems, totalAudio, totalPdf, handleRecentPress]);
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            <LinearGradient
+                colors={['#050d1a', '#0a1628', '#050d1a']}
+                style={StyleSheet.absoluteFill}
+            />
+
+            <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+                {/* Header */}
+                <View style={styles.header}>
+                    {isSearching ? (
+                        <View style={styles.searchBar}>
+                            <TouchableOpacity
+                                onPress={() => { setIsSearching(false); setSearchQuery(''); }}
+                                style={styles.searchBackBtn}
+                            >
+                                <Ionicons name="arrow-back" size={22} color="#fff" />
+                            </TouchableOpacity>
+                            <View style={styles.searchInputWrap}>
+                                <Ionicons name="search" size={16} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
+                                <TextInput
+                                    style={styles.searchInput}
+                                    placeholder="ደርስ ፈልግ..."
+                                    placeholderTextColor="rgba(255,255,255,0.35)"
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
+                                    autoFocus
+                                />
+                                {searchQuery.length > 0 && (
+                                    <TouchableOpacity onPress={() => setSearchQuery('')}>
+                                        <Ionicons name="close-circle" size={18} color="rgba(255,255,255,0.4)" />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        </View>
+                    ) : (
+                        <View style={styles.headerRow}>
+                            <View>
+                                <Text style={styles.headerGreeting}>እንኳን ደህና መጡ 👋</Text>
+                                <Text style={styles.headerTitle}>ደርሶች</Text>
+                            </View>
+                            <View style={styles.headerActions}>
+                                <TouchableOpacity onPress={() => setIsSearching(true)} style={styles.iconBtn}>
+                                    <Ionicons name="search" size={20} color="#fff" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => router.push('/about')} style={styles.iconBtn}>
+                                    <Ionicons name="person-circle-outline" size={20} color="#fff" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={handleSync} style={[styles.iconBtn, styles.syncBtn]}>
+                                    <Ionicons name="cloud-upload-outline" size={20} color="#4ade80" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                </View>
+
+                {/* Search results */}
+                {isSearching && searchQuery.trim() !== '' ? (
+                    <FlatList
+                        data={filteredTracks}
+                        keyExtractor={item => item.id}
+                        renderItem={renderSearchItem}
+                        contentContainerStyle={styles.listContent}
+                        ListEmptyComponent={
+                            <View style={styles.emptyWrap}>
+                                <Ionicons name="search-outline" size={48} color="rgba(255,255,255,0.15)" />
+                                <Text style={styles.emptyText}>"{searchQuery}" አልተገኘም</Text>
+                            </View>
+                        }
+                    />
+                ) : (
+                    <FlatList
+                        data={CATEGORIES}
+                        keyExtractor={item => item.id}
+                        renderItem={renderCategoryItem}
+                        ListHeaderComponent={ListHeader}
+                        contentContainerStyle={styles.listContent}
+                        initialNumToRender={6}
+                        maxToRenderPerBatch={10}
+                        windowSize={5}
+                        removeClippedSubviews
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
+            </SafeAreaView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#020617',
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    backgroundColor: 'transparent',
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    flex: 1,
-    letterSpacing: -0.5,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    padding: 8,
-    marginRight: 8,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 12,
-  },
-  listContent: {
-    paddingVertical: 10,
-    paddingBottom: 100,
-  },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  searchInput: {
-    flex: 1,
-    height: 46,
-    borderRadius: 23,
-    paddingHorizontal: 16,
-    fontSize: 16,
-  },
-  searchResultItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-  },
-  resultIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  resultTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultCategory: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  emptyContainer: {
-    padding: 40,
-    alignItems: 'center',
-  },
+    container: { flex: 1, backgroundColor: '#050d1a' },
+    safeArea: { flex: 1 },
+
+    /* Header */
+    header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 },
+    headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    headerGreeting: { fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: '500', marginBottom: 2 },
+    headerTitle: { fontSize: 32, fontWeight: '900', color: '#ffffff', letterSpacing: -1 },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    iconBtn: {
+        width: 40, height: 40, borderRadius: 20,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        justifyContent: 'center', alignItems: 'center',
+    },
+    syncBtn: { backgroundColor: 'rgba(74,222,128,0.12)' },
+
+    /* Search */
+    searchBar: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    searchBackBtn: {
+        width: 40, height: 40, borderRadius: 20,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        justifyContent: 'center', alignItems: 'center',
+    },
+    searchInputWrap: {
+        flex: 1, flexDirection: 'row', alignItems: 'center',
+        height: 44, borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+        paddingHorizontal: 14,
+    },
+    searchInput: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '500' },
+
+    /* Stats */
+    statsBanner: {
+        flexDirection: 'row', marginHorizontal: 20, marginBottom: 24,
+        borderRadius: 18, overflow: 'hidden', paddingVertical: 16,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    },
+    statItem: { flex: 1, alignItems: 'center', gap: 4 },
+    statNumber: { fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 },
+    statLabel: { fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
+    statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 4 },
+
+    /* Section rows */
+    sectionRow: {
+        flexDirection: 'row', alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20, marginBottom: 12,
+    },
+    sectionLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    sectionDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#4ade80' },
+    sectionTitle: { fontSize: 16, fontWeight: '800', color: 'rgba(255,255,255,0.85)', letterSpacing: -0.3 },
+    sectionSub: { fontSize: 12, color: 'rgba(255,255,255,0.35)', fontWeight: '500' },
+    sectionBadge: {
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2,
+    },
+    sectionBadgeText: { fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.5)' },
+
+    /* Recent */
+    recentSection: { marginBottom: 24 },
+    recentScroll: { paddingHorizontal: 20, gap: 12 },
+    recentCard: {
+        width: 148,
+        height: 130,
+        borderRadius: 20,
+        overflow: 'hidden',
+        padding: 14,
+        justifyContent: 'flex-end',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.08)',
+    },
+    recentWatermark: {
+        position: 'absolute',
+        right: -8,
+        top: -8,
+        opacity: 0.12,
+    },
+    recentTypeBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        alignSelf: 'flex-start',
+        paddingHorizontal: 7,
+        paddingVertical: 3,
+        borderRadius: 8,
+        marginBottom: 6,
+    },
+    recentTypeTxt: { fontSize: 10, fontWeight: '800' },
+    recentTitle: {
+        fontSize: 13,
+        fontWeight: '800',
+        color: '#fff',
+        letterSpacing: -0.3,
+        lineHeight: 17,
+        marginBottom: 3,
+    },
+    recentCat: { fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: '500' },
+
+    /* List */
+    listContent: { paddingBottom: 120, paddingTop: 4 },
+
+    /* Search results */
+    searchResultItem: {
+        flexDirection: 'row', alignItems: 'center',
+        paddingHorizontal: 20, paddingVertical: 14,
+        borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)', gap: 12,
+    },
+    searchResultIcon: {
+        width: 38, height: 38, borderRadius: 12,
+        backgroundColor: 'rgba(74,222,128,0.12)',
+        justifyContent: 'center', alignItems: 'center',
+    },
+    searchResultTitle: { fontSize: 15, fontWeight: '600', color: '#fff' },
+    searchResultSub: { fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 },
+
+    /* Empty */
+    emptyWrap: { paddingTop: 80, alignItems: 'center', gap: 12 },
+    emptyText: { color: 'rgba(255,255,255,0.35)', fontSize: 15, fontWeight: '500' },
 });

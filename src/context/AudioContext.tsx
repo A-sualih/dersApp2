@@ -1,10 +1,10 @@
-import { setAudioModeAsync, useAudioPlayer, type AudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useCallback } from 'react';
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
 import { Alert, AppState } from 'react-native';
 import { DRIVE_FILES } from '../constants/mockData';
-import { DriveFile } from '../types';
-import { useMediaPlayerStore } from '../store/mediaPlayerStore';
 import { useAppStore } from '../store/appStore';
+import { useMediaPlayerStore } from '../store/mediaPlayerStore';
+import { DriveFile } from '../types';
 
 interface AudioContextType {
     player: AudioPlayer | null;
@@ -184,6 +184,20 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             player.play();
             store.setIsPlaying(true);
             store.setIsLoading(false);
+
+            // Track as recent item
+            const allCategories = (await import('../constants/mockData')).CATEGORIES;
+            const parentCat = allCategories.find(c => c.files.some(f => f.id === foundFile.id));
+            if (parentCat) {
+                useAppStore.getState().addRecentItem({
+                    id: foundFile.id,
+                    name: foundFile.name,
+                    type: 'audio',
+                    url: foundFile.url,
+                    categoryId: parentCat.id,
+                    categoryTitle: parentCat.title,
+                });
+            }
         } catch (error: any) {
             console.error('Error playing sound', error);
             store.setIsLoading(false);
@@ -230,8 +244,11 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const currentIndex = audioFiles.findIndex(f => f.id === store.currentFile?.id);
         const nextIndex = (currentIndex + 1) % audioFiles.length;
         const nextFile = audioFiles[nextIndex];
-        
+
         saveCurrentProgressNow();
+        // Reset duration immediately so UI shows loading instead of stale/undefined value
+        store.setDuration(0);
+        store.setIsLoading(true);
         pendingSeekMs.current = null;
         playSound(nextFile.url, nextFile.name, store.queue, nextFile.id);
     };
@@ -248,8 +265,11 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const currentIndex = audioFiles.findIndex(f => f.id === store.currentFile?.id);
         const prevIndex = (currentIndex - 1 + audioFiles.length) % audioFiles.length;
         const prevFile = audioFiles[prevIndex];
-        
+
         saveCurrentProgressNow();
+        // Reset duration immediately so UI shows loading instead of stale/undefined value
+        store.setDuration(0);
+        store.setIsLoading(true);
         pendingSeekMs.current = null;
         playSound(prevFile.url, prevFile.name, store.queue, prevFile.id);
     };

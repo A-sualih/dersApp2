@@ -3,11 +3,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAudio } from '@/src/context/AudioContext';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
+import { useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export const MiniPlayer: React.FC = () => {
     const { player, currentUri } = useAudio();
@@ -185,9 +185,11 @@ const MiniPlayerContent: React.FC<{ player: AudioPlayer }> = ({ player }) => {
                         <Text style={styles.timeLabel}>
                             {formatTime(position)}
                         </Text>
-                        <Text style={styles.timeLabel}>
-                            {duration > 0 ? formatTime(duration) : '--:--'}
-                        </Text>
+                        {duration > 0 ? (
+                            <Text style={styles.timeLabel}>{formatTime(duration)}</Text>
+                        ) : (
+                            <ActivityIndicator size="small" color="#86efac" style={{ transform: [{ scale: 0.6 }] }} />
+                        )}
                     </View>
                 </View>
 

@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "cli": {
+      "doctor": {
+        "skipChecks": true
+      }
+    }
+  }
+}
