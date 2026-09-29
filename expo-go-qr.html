@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ሉምአቱል ኢእቲቃድ - Expo Go QR Code</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        h2 {
+            color: #666;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .qr-code {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .steps {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .step {
+            margin: 15px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #4630eb;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 4px;
+        }
+        .app-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #4630eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>በኡስታዝ አቡ ሰልዋ ሁሴን ስዩም</h1>
+        <h2>ሉምአቱል ኢእቲቃድ</h2>
+        
+        <div class="app-info">
+            <p><span class="info-label">App Name:</span> በኡስታዝ አቡ ሰልዋ ሁሴን ስዩም ሉምአቱል ኢእቲቃድ</p>
+            <p><span class="info-label">Version:</span> 1.0.1 (Updated PDF)</p>
+            <p><span class="info-label">Package:</span> com.lummatul.iitqad</p>
+            <p><span class="info-label">Update:</span> Published to production channel</p>
+        </div>
+        
+        <div class="note">
+            <strong>⚠️ No QR Code Available:</strong> The Expo development server is not currently running. Please follow the manual steps below.
+        </div>
+        
+        <div class="steps">
+            <h3>📱 How to Get Update on Your Phone:</h3>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Install Expo Go:</strong> Download "Expo Go" from:
+                <ul>
+                    <li><strong>iOS:</strong> App Store (Search "Expo Go")</li>
+                    <li><strong>Android:</strong> Play Store (Search "Expo Go")</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Start Development Server:</strong> On your computer, run:
+                <pre style="background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto;">
+cd "C:\Users\hp\Downloads\dersApp2"
+npx expo start --offline</pre>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Get Connection Options:</strong> After starting Expo, you'll see:
+                <ul>
+                    <li><strong>LAN:</strong> exp://192.168.x.x:8081</li>
+                    <li><strong>Tunnel:</strong> exp://xxxx-xxxx.tunnel.expo.dev</li>
+                    <li><strong>QR Code:</strong> Scan with Expo Go app</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Connect in Expo Go:</strong>
+                <ul>
+                    <li>Open Expo Go on your phone</li>
+                    <li>Tap "Scan QR Code" or go to "Projects" tab</li>
+                    <li>Scan QR code or enter the exp:// URL</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            <strong>Alternative Method:</strong> If Expo server won't start due to SSL issues, you can:
+            <ol>
+                <li>Use the web app: <a href="http://localhost:8000">http://localhost:8000</a> on your phone's browser</li>
+                <li>Add to Home Screen for PWA experience</li>
+                <li>The web app has all 48 files including the updated PDF</li>
+            </ol>
+        </div>
+        
+        <div class="app-info">
+            <h4>📄 What's Updated in Version 1.0.1:</h4>
+            <ul>
+                <li>✅ PDF link updated: <code>1tPde0RyU_17JUJjZGD_-JMIaqp2HEABK</code></li>
+                <li>✅ PDF name updated: "مذكرة_على_لمعة_الاعتقاد_سؤال_وجواب_1.pdf"</li>
+                <li>✅ App version: 1.0.0 → 1.0.1</li>
+                <li>✅ All 47 audio files unchanged</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

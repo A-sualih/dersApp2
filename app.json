@@ -1,19 +1,20 @@
 {
   "expo": {
-    "name": "ደርስ አፕሊኬሽን ",
+    "name": "በኡስታዝ አቡ ሰልዋ ሁሴን ስዩም ሉምአቱል ኢእቲቃድ",
     "slug": "dersnewapp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "derseapp",
+    "scheme": "lummatuliitqad",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "package": "com.sualih.NewDerseApp",
+    "package": "com.lummatul.iitqad",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.lummatul.iitqad",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
@@ -29,7 +30,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.sualih.NewDerseApp",
+      "package": "com.lummatul.iitqad",
       "permissions": [
         "WAKE_LOCK",
         "FOREGROUND_SERVICE",
@@ -69,6 +70,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "cli": {
+      "appVersionSource": "local"
     },
     "extra": {
       "router": {},
