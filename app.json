@@ -1,22 +1,20 @@
 {
   "expo": {
-    "name": "በኡስታዝ አቡ ሰልዋ ሁሴን ስዩም ሉምአቱል ኢእቲቃድ",
-    "slug": "dersnewapp",
-    "version": "1.0.1",
+    "name": "ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ",
+    "slug": "huze-aqida-ustaz-abuhuzeyfa",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "lummatuliitqad",
+    "scheme": "huzeaqida",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "package": "com.lummatul.iitqad",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lummatul.iitqad",
+      "bundleIdentifier": "com.huzeaqida.ustazabuhuzeyfa",
       "infoPlist": {
         "UIBackgroundModes": [
+          "audio",
           "audio"
         ]
       }
@@ -24,13 +22,11 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.lummatul.iitqad",
+      "package": "com.huzeaqida.ustazabuhuzeyfa",
       "permissions": [
         "WAKE_LOCK",
         "FOREGROUND_SERVICE",
@@ -65,27 +61,18 @@
         }
       ],
       "expo-updates",
-      "expo-video"
+      "expo-video",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "cli": {
-      "appVersionSource": "local"
-    },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "9c73d4f7-915e-4f42-a950-64a69d27a37d"
+        "projectId": "4a4d7c2f-8737-48a9-b231-538ec8540df5"
       }
-    },
-    "owner": "sualih",
-    "updates": {
-      "url": "https://u.expo.dev/9c73d4f7-915e-4f42-a950-64a69d27a37d"
-    },
-    "developer": {
-      "tool": "expo-cli"
     }
   }
 }

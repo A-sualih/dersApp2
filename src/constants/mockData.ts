@@ -1,17 +1,14 @@
 import { Category } from '../types';
-import { LUMMATUL_IITQAD_FILES } from './lummatulIitqadData';
+import { ALL_AUDIO_FILES } from './allAudioData';
 
-// Helper to get direct download links from Google Drive
-const getDirectLink = (id: string) => `https://drive.google.com/uc?id=${id}&export=download`;
-
-export const DRIVE_FILES = [...LUMMATUL_IITQAD_FILES];
+export const DRIVE_FILES = [...ALL_AUDIO_FILES];
 export const ALL_FILES = DRIVE_FILES;
 
 export const CATEGORIES: Category[] = [
-    {
-        id: 'lummatul-iitqad',
-        title: 'ሉምአቱል ኢእቲቃድ',
-        description: 'የሉምአቱል ኢእቲቃድ ደርስ ስብስቦች',
-        files: LUMMATUL_IITQAD_FILES,
-    },
+  {
+    id: 'huze-aqida-ustaz-abuhuzeyfa',
+    title: 'ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ - ክፍል 1-25',
+    description: 'ከ 1 እስከ 25 የ ኹዝ አቂዳ ክፍሎች በኡስታዝ አቡ ሁዘይፋ',
+    files: ALL_AUDIO_FILES,
+  },
 ];

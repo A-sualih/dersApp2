@@ -3,9 +3,21 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-const { resolver } = config;
+// Add asset extensions for audio and PDF files
+config.resolver.assetExts = [
+  ...config.resolver.assetExts,
+  'ogg',
+  'mp3',
+  'wav',
+  'm4a',
+  'pdf',
+  'epub'
+];
 
-config.resolver.sourceExts = ['js', 'jsx', 'json', 'ts', 'tsx', 'mjs', 'cjs'];
+// Include all default source extensions
+config.resolver.sourceExts = [
+  ...config.resolver.sourceExts,
+];
 
 // Blacklist native-only modules from Web build
 if (process.env.EXPO_PUBLIC_PLATFORM === 'web') {

@@ -5,7 +5,7 @@ import { useOTAUpdate } from '@/src/hooks/useOTAUpdate';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Linking, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AboutScreen() {
@@ -32,14 +32,8 @@ export default function AboutScreen() {
         Alert.alert('Success', 'Profile updated successfully!');
     };
 
-    const handleShare = async () => {
-        try {
-            await Share.share({
-                message: 'Check out Derse App! Download it now: https://expo.dev/artifacts/eas/k7VYj8PW7dCaQNMKWzALoe.apk',
-            });
-        } catch (error) {
-            Alert.alert('Error', 'Failed to share the app.');
-        }
+    const handleUpdate = async () => {
+        // Update logic here
     };
 
     return (
@@ -130,15 +124,7 @@ export default function AboutScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: theme.tint + '10', marginTop: 20 }]}
-                        onPress={handleShare}
-                    >
-                        <Ionicons name="share-social" size={20} color={theme.tint} style={{ marginRight: 8 }} />
-                        <Text style={[styles.actionBtnText, { color: theme.tint }]}>Share Application</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: theme.border + '20', marginTop: 12 }]}
+                        style={[styles.actionBtn, { backgroundColor: theme.border + '20', marginTop: 20 }]}
                         onPress={checkManually}
                         disabled={isChecking}
                     >

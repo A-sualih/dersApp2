@@ -41,16 +41,20 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
 
     useEffect(() => {
         const loadLocalFile = async () => {
-            if (effectiveUrl.startsWith('file://')) {
+            if (effectiveUrl.startsWith('file://') || effectiveUrl.startsWith('asset://')) {
                 try {
-                    // Read file as base64 to bypass WebView security restrictions on local files
+                    console.log('Loading bundled PDF from:', effectiveUrl);
+                    
+                    // For bundled assets, read as base64
                     const base64 = await FileSystem.readAsStringAsync(effectiveUrl, {
                         encoding: FileSystem.EncodingType.Base64,
                     });
                     setPdfBase64(base64);
+                    console.log('PDF base64 loaded successfully');
                 } catch (error) {
-                    console.error('Error reading local PDF as base64:', error);
-                    setPdfBase64(null); // Fallback to URL in WebView
+                    console.error('Error reading local PDF:', error);
+                    // If local reading fails, try loading the asset directly
+                    setPdfBase64(null);
                 }
             } else {
                 setPdfBase64(null);
@@ -142,11 +146,22 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
                 async function loadPdf() {
+                    // Check if pdfjsLib loaded successfully
+                    if (typeof pdfjsLib === 'undefined') {
+                        document.getElementById('loading').innerHTML = 
+                            '<div style="color: white; padding: 20px; text-align: center;">' +
+                            '<h2>⚠️ Offline Mode</h2>' +
+                            '<p style="margin-top: 10px;">PDF.js library could not load.</p>' +
+                            '<p>Please connect to internet to view this PDF.</p>' +
+                            '</div>';
+                        return;
+                    }
+
                     try {
                         let loadingTask;
                         
                         if (pdfBase64) {
-                            console.log('Loading from Base64 data');
+                            console.log('Loading PDF from Base64 data');
                             const binaryString = atob(pdfBase64);
                             const bytes = new Uint8Array(binaryString.length);
                             for (let i = 0; i < binaryString.length; i++) {
@@ -154,7 +169,7 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
                             }
                             loadingTask = pdfjsLib.getDocument({ data: bytes });
                         } else {
-                            console.log('Loading from URL:', pdfUrl);
+                            console.log('Loading PDF from URL:', pdfUrl);
                             loadingTask = pdfjsLib.getDocument({
                                 url: pdfUrl,
                                 disableRange: true,
@@ -163,18 +178,18 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
                         }
                         
                         pdfDoc = await loadingTask.promise;
+                        console.log('PDF loaded successfully, pages:', pdfDoc.numPages);
                         document.getElementById('loading').style.display = 'none';
                         await setupViewer();
                     } catch (e) {
                         console.error('PDF loading error:', e);
                         
-                        // Fallback to remote if first attempt (base64 or local url) fails
+                        // Fallback to remote if first attempt fails
                         const remoteUrl = "${effectiveRemoteUrl}";
-                        if (remoteUrl && remoteUrl !== "undefined" && pdfUrl !== remoteUrl) {
+                        if (remoteUrl && remoteUrl !== "undefined" && pdfUrl !== remoteUrl && !pdfBase64) {
                             console.log('Falling back to remote URL:', remoteUrl);
                             document.getElementById('loading').innerText = 'Local load failed. Fetching remote...';
                             
-                            // Try loading from remote URL directly
                             try {
                                 const fallbackTask = pdfjsLib.getDocument({
                                     url: remoteUrl,
@@ -191,9 +206,14 @@ const NativePdf: React.FC<NativePdfProps> = ({ url, remoteUrl, targetPage = 1, z
                         }
 
                         if (e.name === 'InvalidPDFException') {
-                            document.getElementById('loading').innerText = 'Error: Invalid PDF structure.';
+                            document.getElementById('loading').innerHTML = 
+                                '<div style="color: white; padding: 20px;">❌ Error: Invalid PDF file</div>';
                         } else {
-                            document.getElementById('loading').innerText = 'Error loading PDF: ' + e.message;
+                            document.getElementById('loading').innerHTML = 
+                                '<div style="color: white; padding: 20px;">' +
+                                '<p>❌ Error loading PDF</p>' +
+                                '<p style="font-size: 12px; margin-top: 10px;">' + e.message + '</p>' +
+                                '</div>';
                         }
                     }
                 }

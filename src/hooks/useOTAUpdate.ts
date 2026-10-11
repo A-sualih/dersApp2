@@ -1,118 +1,118 @@
 import * as Updates from 'expo-updates';
-import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
-import { backgroundTaskManager } from '../services/BackgroundTaskManager';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Platform } from 'react-native';
 
-export const useOTAUpdate = () => {
-  const [isChecking, setIsChecking] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+/**
+ * Hook to handle Over-The-Air (OTA) updates using Expo Updates
+ * @returns Object containing update state and functions
+ */
+export function useOTAUpdate() {
+    const [isChecking, setIsChecking] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [updateAvailable, setUpdateAvailable] = useState(false);
 
-  const onFetchUpdateAsync = async () => {
-    try {
-      setIsChecking(true);
-      const update = await Updates.checkForUpdateAsync();
+    // Check for updates on mount in production
+    useEffect(() => {
+        if (__DEV__ || Platform.OS === 'web') {
+            return;
+        }
 
-      if (update.isAvailable) {
-        setIsUpdating(true);
-        const taskId = backgroundTaskManager.addTask({ 
-          title: 'System Update', 
-          type: 'sync' 
-        });
-        
-        backgroundTaskManager.updateTask(taskId, { 
-          status: 'running', 
-          currentStep: 'Downloading new version...' 
-        });
+        // Check if updates are enabled
+        if (!Updates.isEnabled) {
+            console.log('[OTA] Updates are not enabled');
+            return;
+        }
 
-        await Updates.fetchUpdateAsync();
-        
-        backgroundTaskManager.updateTask(taskId, { 
-          status: 'completed', 
-          progress: 100, 
-          currentStep: 'Ready to restart' 
-        });
-        
-        Alert.alert(
-          'Update Available',
-          'A new version of the app is available. Would you like to restart the app to apply the update?',
-          [
-            {
-              text: 'Later',
-              style: 'cancel',
-            },
-            {
-              text: 'Restart',
-              onPress: async () => {
-                await Updates.reloadAsync();
-              },
-            },
-          ]
-        );
-      } else {
-        // Only show alert if manually triggered
-        // For automatic checks, we might want to stay silent
-      }
-    } catch (error: any) {
-      console.error('Error fetching latest Expo update:', error);
-      // If we have a running task, mark it as failed
-      const activeTasks = backgroundTaskManager.getTasks();
-      const updateTask = activeTasks.find(t => t.title === 'System Update' && t.status === 'running');
-      if (updateTask) {
-        backgroundTaskManager.updateTask(updateTask.id, { 
-          status: 'failed', 
-          error: error.message || 'Update failed' 
-        });
-      }
-    } finally {
-      setIsChecking(false);
-      setIsUpdating(false);
-    }
-  };
+        console.log('[OTA] Update check on mount');
+    }, []);
 
-  const checkManually = async () => {
-    try {
-      setIsChecking(true);
-      const update = await Updates.checkForUpdateAsync();
+    /**
+     * Check for and download available updates
+     */
+    const onFetchUpdateAsync = useCallback(async () => {
+        // Skip in development or web
+        if (__DEV__ || Platform.OS === 'web') {
+            console.log('[OTA] Skipping update check in development/web');
+            return;
+        }
 
-      if (update.isAvailable) {
-        setIsUpdating(true);
-        const taskId = backgroundTaskManager.addTask({ 
-          title: 'OTA Update', 
-          type: 'sync' 
-        });
-        
-        backgroundTaskManager.updateTask(taskId, { 
-          status: 'running', 
-          currentStep: 'Installing update...' 
-        });
+        if (!Updates.isEnabled) {
+            console.log('[OTA] Updates are not enabled');
+            return;
+        }
 
-        await Updates.fetchUpdateAsync();
+        try {
+            setIsChecking(true);
+            console.log('[OTA] Checking for updates...');
 
-        backgroundTaskManager.updateTask(taskId, { 
-          status: 'completed', 
-          progress: 100, 
-          currentStep: 'Update installed' 
-        });
+            const update = await Updates.checkForUpdateAsync();
 
-        Alert.alert(
-          'Update Found',
-          'The update has been downloaded. Restart the app to apply changes?',
-          [
-            { text: 'Later', style: 'cancel' },
-            { text: 'Restart Now', onPress: () => Updates.reloadAsync() }
-          ]
-        );
-      } else {
-        Alert.alert('Up to Date', 'You are already running the latest version of Derse App.');
-      }
-    } catch (error) {
-      Alert.alert('Update Error', 'Failed to check for updates. Please check your internet connection.');
-      console.error(error);
-    } finally {
-      setIsChecking(false);
-      setIsUpdating(false);
-    }
-  };
+            if (update.isAvailable) {
+                console.log('[OTA] Update available, downloading...');
+                setUpdateAvailable(true);
+                setIsDownloading(true);
 
-  return { onFetchUpdateAsync, checkManually, isChecking, isUpdating };
-};
+                await Updates.fetchUpdateAsync();
+                
+                setIsDownloading(false);
+                console.log('[OTA] Update downloaded successfully');
+
+                // Prompt user to reload
+                Alert.alert(
+                    'Update Available',
+                    'A new version has been downloaded. Would you like to restart the app to apply it?',
+                    [
+                        {
+                            text: 'Later',
+                            style: 'cancel',
+                        },
+                        {
+                            text: 'Restart Now',
+                            onPress: async () => {
+                                await Updates.reloadAsync();
+                            },
+                        },
+                    ]
+                );
+            } else {
+                console.log('[OTA] App is up to date');
+            }
+        } catch (error) {
+            console.error('[OTA] Error checking for updates:', error);
+            setUpdateAvailable(false);
+        } finally {
+            setIsChecking(false);
+            setIsDownloading(false);
+        }
+    }, []);
+
+    /**
+     * Manually check for updates (alias for onFetchUpdateAsync)
+     */
+    const checkManually = onFetchUpdateAsync;
+
+    /**
+     * Manually reload the app (useful after downloading an update)
+     */
+    const reloadApp = useCallback(async () => {
+        if (Platform.OS === 'web') {
+            window.location.reload();
+            return;
+        }
+
+        try {
+            await Updates.reloadAsync();
+        } catch (error) {
+            console.error('[OTA] Error reloading app:', error);
+        }
+    }, []);
+
+    return {
+        isChecking,
+        isDownloading,
+        updateAvailable,
+        onFetchUpdateAsync,
+        checkManually,
+        reloadApp,
+    };
+}

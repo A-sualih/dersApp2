@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PdfViewer() {
@@ -20,6 +20,7 @@ export default function PdfViewer() {
     const [currentPage, setCurrentPage] = useState<number>(initialPage);
     const [isPageLoaded, setIsPageLoaded] = useState(!!targetPageParam); // skip AsyncStorage if param given
     const [notesModalVisible, setNotesModalVisible] = useState(false);
+    const [isPdfReady, setIsPdfReady] = useState(false);
 
     const colorScheme = useColorScheme() ?? 'light';
     const theme = Colors[colorScheme];
@@ -42,6 +43,12 @@ export default function PdfViewer() {
         };
         loadPage();
     }, [name, persistenceKey]);
+
+    // PDF is ready immediately for bundled assets
+    useEffect(() => {
+        console.log('PDF Viewer mounted with bundled asset, ready immediately');
+        setIsPdfReady(true);
+    }, []);
 
     const [zoom, setZoom] = useState(1.0);
 
@@ -82,13 +89,6 @@ export default function PdfViewer() {
                     >
                         <Ionicons name="document-text" size={20} color={theme.tint} />
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => Linking.openURL(remoteUrl || url)}
-                        style={[styles.headerBtn, { backgroundColor: theme.border + '50' }]}
-                    >
-                        <Ionicons name="share-outline" size={20} color={theme.text} />
-                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -103,13 +103,25 @@ export default function PdfViewer() {
             />
 
             <View style={[styles.pdfContainer, { backgroundColor: colorScheme === 'dark' ? '#151718' : '#F8FAFC' }]}>
-                <NativePdf
-                    url={url as string}
-                    remoteUrl={remoteUrl as string}
-                    targetPage={currentPage}
-                    zoom={zoom}
-                    onPageChanged={handlePageUpdate}
-                />
+                {!isPdfReady ? (
+                    <View style={[styles.loadingContainer, { backgroundColor: colorScheme === 'dark' ? '#151718' : '#FFFFFF' }]}>
+                        <ActivityIndicator size="large" color={colorScheme === 'dark' ? '#4CAF50' : '#2196F3'} />
+                        <Text style={[styles.loadingText, { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }]}>
+                            Loading PDF...
+                        </Text>
+                        <Text style={[styles.loadingSubtext, { color: colorScheme === 'dark' ? '#AAAAAA' : '#666666' }]}>
+                            Loading PDF, please wait...
+                        </Text>
+                    </View>
+                ) : (
+                    <NativePdf
+                        url={url as string}
+                        remoteUrl={remoteUrl as string}
+                        targetPage={currentPage}
+                        zoom={zoom}
+                        onPageChanged={handlePageUpdate}
+                    />
+                )}
             </View>
         </SafeAreaView>
     );
@@ -170,5 +182,20 @@ const styles = StyleSheet.create({
     },
     pdfContainer: {
         flex: 1,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginTop: 16,
+    },
+    loadingSubtext: {
+        fontSize: 14,
+        marginTop: 8,
+        textAlign: 'center',
     },
 });

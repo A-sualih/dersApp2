@@ -1,18 +1,15 @@
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemeProvider as AppThemeProvider } from '@/src/context/ThemeContext';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
-
-import { MiniPlayer } from '../src/components/MiniPlayer';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { ThemeProvider as AppThemeProvider } from '@/src/context/ThemeContext';
-import { AudioProvider } from '../src/context/AudioContext';
-
 import { BackgroundTaskOverlay } from '../src/components/background/BackgroundTaskOverlay';
 import { FloatingProgressWidget } from '../src/components/background/FloatingProgressWidget';
+import { MiniPlayer } from '../src/components/MiniPlayer';
+import { AudioProvider } from '../src/context/AudioContext';
 import { BackgroundTaskProvider } from '../src/context/BackgroundTaskContext';
 import { NoteProvider } from '../src/context/NoteContext';
 import { UserProvider } from '../src/context/UserContext';
@@ -51,6 +48,39 @@ function LayoutContent() {
   }, [currentState]);
 
   React.useEffect(() => {
+    // Clear old storage and copy local assets
+    const initializeApp = async () => {
+      try {
+        // Preload all bundled assets first
+        const { preloadAllAssets } = require('../src/constants/bundledAssets');
+        await preloadAllAssets();
+        console.log('✅ All assets preloaded');
+        
+        // Clear AsyncStorage to remove old data
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        await AsyncStorage.clear();
+        console.log('Cleared AsyncStorage');
+        
+        // Clear MMKV storage if exists
+        try {
+          const { useAppStore } = require('../src/store/appStore');
+          const { useMediaPlayerStore } = require('../src/store/mediaPlayerStore');
+          useAppStore.persist.clearStorage();
+          useMediaPlayerStore.persist.clearStorage();
+          console.log('Cleared Zustand stores');
+        } catch (e) {
+          console.log('No Zustand stores to clear');
+        }
+        
+        // Local assets are loaded directly via bundled assets
+        // No need for manual copying anymore
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      }
+    };
+    
+    initializeApp();
+    
     // Only check for OTA updates once on initial mount, not on every foreground/background transition
     if (!__DEV__) {
       onFetchUpdateAsync();

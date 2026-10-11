@@ -1,12 +1,13 @@
 import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNotes } from '../context/NoteContext';
 import { useTheme } from '../context/ThemeContext';
-import { NoteModal } from './NoteModal';
-import { NoteList } from './NoteList';
 import { Note } from '../types/note';
+import { NoteList } from './NoteList';
+import { NoteModal } from './NoteModal';
 
 interface NotesManagerModalProps {
     visible: boolean;

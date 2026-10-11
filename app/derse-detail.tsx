@@ -1,10 +1,10 @@
-import { FileListItem } from '@/src/components/FileListItem';
+import { LocalFileListItem } from '@/src/components/LocalFileListItem';
 import { NoteModal } from '@/src/components/NoteModal';
 import { CATEGORIES } from '@/src/constants/mockData';
+import { AmharicFonts, FontSizes, TextShadows } from '@/src/constants/fonts';
+import { useAudio } from '@/src/context/AudioContext';
 import { useNotes } from '@/src/context/NoteContext';
-import { useAudioPlayer } from '@/src/hooks/useAudioPlayer';
 import { DriveFile } from '@/src/types';
-import { checkFileExists, getLocalUri } from '@/src/utils/fileSystem';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -46,7 +46,8 @@ export default function DerseDetailScreen() {
     const [pdfLocalUri, setPdfLocalUri] = useState<string | null>(null);
     useEffect(() => {
         if (!categoryPdf) return;
-        checkFileExists(categoryPdf.name).then(exists => {
+        const { checkFileExists, getLocalUri } = require('@/src/utils/fileSystem');
+        checkFileExists(categoryPdf.name).then((exists: boolean) => {
             if (exists) setPdfLocalUri(getLocalUri(categoryPdf.name));
         });
     }, [categoryPdf]);
@@ -60,7 +61,7 @@ export default function DerseDetailScreen() {
         isPlaying,
         currentFileId,
         isLoading,
-    } = useAudioPlayer();
+    } = useAudio();
 
     // Auto-play a specific file when navigated from recent items
     useEffect(() => {
@@ -176,7 +177,7 @@ export default function DerseDetailScreen() {
                     renderItem={({ item, index }) => {
                         const isItemCurrent = currentFileId === item.id;
                         return (
-                            <FileListItem
+                            <LocalFileListItem
                                 file={item}
                                 index={index}
                                 onPlay={(uri, title) =>
@@ -261,16 +262,19 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     categoryTitle: {
-        fontSize: 22,
-        fontWeight: '800',
+        fontSize: FontSizes.heading,
+        ...AmharicFonts.display,
         color: '#fff',
-        letterSpacing: -0.5,
+        letterSpacing: 0.8,
         lineHeight: 28,
+        ...TextShadows.medium,
     },
     categoryMeta: {
-        fontSize: 13,
+        fontSize: FontSizes.caption,
         color: 'rgba(255,255,255,0.75)',
+        ...AmharicFonts.regular,
         marginTop: 4,
+        ...TextShadows.soft,
     },
     tabRow: {
         flexDirection: 'row',
@@ -292,8 +296,8 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
     },
     tabBtnText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: FontSizes.caption,
+        ...AmharicFonts.secondary,
         color: '#fff',
     },
     tabBtnTextActive: {
@@ -315,8 +319,9 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         color: 'rgba(26,107,60,0.5)',
-        fontSize: 15,
+        fontSize: FontSizes.body,
+        ...AmharicFonts.regular,
         marginTop: 12,
-        fontWeight: '500',
+        ...TextShadows.soft,
     },
 });

@@ -1,5 +1,6 @@
 import { CategoryCard } from '@/src/components/CategoryCard';
 import { CATEGORIES } from '@/src/constants/mockData';
+import { AmharicFonts, FontSizes, TextShadows } from '@/src/constants/fonts';
 import { useBackgroundTasks } from '@/src/context/BackgroundTaskContext';
 import { RecentItem, useAppStore } from '@/src/store/appStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -330,8 +331,20 @@ const styles = StyleSheet.create({
     /* Header */
     header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    headerGreeting: { fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: '500', marginBottom: 2 },
-    headerTitle: { fontSize: 32, fontWeight: '900', color: '#ffffff', letterSpacing: -1 },
+    headerGreeting: { 
+        fontSize: FontSizes.caption, 
+        color: 'rgba(255,255,255,0.5)', 
+        ...AmharicFonts.regular,
+        marginBottom: 2,
+        ...TextShadows.soft,
+    },
+    headerTitle: { 
+        fontSize: 36, 
+        ...AmharicFonts.display,
+        color: '#ffffff', 
+        letterSpacing: 1.2,
+        ...TextShadows.medium,
+    },
     headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     iconBtn: {
         width: 40, height: 40, borderRadius: 20,
@@ -364,7 +377,12 @@ const styles = StyleSheet.create({
     },
     statItem: { flex: 1, alignItems: 'center', gap: 4 },
     statNumber: { fontSize: 20, fontWeight: '900', color: '#fff', letterSpacing: -0.5 },
-    statLabel: { fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
+    statLabel: { 
+        fontSize: FontSizes.tiny, 
+        color: 'rgba(255,255,255,0.5)', 
+        ...AmharicFonts.secondary,
+        ...TextShadows.soft,
+    },
     statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 4 },
 
     /* Section rows */
@@ -375,8 +393,18 @@ const styles = StyleSheet.create({
     },
     sectionLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     sectionDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#4ade80' },
-    sectionTitle: { fontSize: 16, fontWeight: '800', color: 'rgba(255,255,255,0.85)', letterSpacing: -0.3 },
-    sectionSub: { fontSize: 12, color: 'rgba(255,255,255,0.35)', fontWeight: '500' },
+    sectionTitle: { 
+        fontSize: FontSizes.body, 
+        ...AmharicFonts.primary,
+        color: 'rgba(255,255,255,0.85)', 
+        letterSpacing: 0.5,
+        ...TextShadows.soft,
+    },
+    sectionSub: { 
+        fontSize: FontSizes.small, 
+        color: 'rgba(255,255,255,0.35)', 
+        ...AmharicFonts.regular,
+    },
     sectionBadge: {
         backgroundColor: 'rgba(255,255,255,0.1)',
         borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2,
@@ -412,16 +440,24 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 6,
     },
-    recentTypeTxt: { fontSize: 10, fontWeight: '800' },
+    recentTypeTxt: { 
+        fontSize: FontSizes.tiny, 
+        ...AmharicFonts.secondary,
+    },
     recentTitle: {
-        fontSize: 13,
-        fontWeight: '800',
+        fontSize: FontSizes.caption,
+        ...AmharicFonts.primary,
         color: '#fff',
-        letterSpacing: -0.3,
+        letterSpacing: 0.3,
         lineHeight: 17,
         marginBottom: 3,
+        ...TextShadows.soft,
     },
-    recentCat: { fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: '500' },
+    recentCat: { 
+        fontSize: FontSizes.tiny, 
+        color: 'rgba(255,255,255,0.45)', 
+        ...AmharicFonts.regular,
+    },
 
     /* List */
     listContent: { paddingBottom: 120, paddingTop: 4 },
@@ -437,10 +473,24 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(74,222,128,0.12)',
         justifyContent: 'center', alignItems: 'center',
     },
-    searchResultTitle: { fontSize: 15, fontWeight: '600', color: '#fff' },
-    searchResultSub: { fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 },
+    searchResultTitle: { 
+        fontSize: FontSizes.body, 
+        ...AmharicFonts.secondary,
+        color: '#fff',
+    },
+    searchResultSub: { 
+        fontSize: FontSizes.small, 
+        color: 'rgba(255,255,255,0.45)', 
+        ...AmharicFonts.regular,
+        marginTop: 2,
+    },
 
     /* Empty */
     emptyWrap: { paddingTop: 80, alignItems: 'center', gap: 12 },
-    emptyText: { color: 'rgba(255,255,255,0.35)', fontSize: 15, fontWeight: '500' },
+    emptyText: { 
+        color: 'rgba(255,255,255,0.35)', 
+        fontSize: FontSizes.body, 
+        ...AmharicFonts.regular,
+        ...TextShadows.soft,
+    },
 });

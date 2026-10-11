@@ -1,95 +1,73 @@
 import * as FileSystem from 'expo-file-system/legacy';
-import { Platform } from 'react-native';
 
-// Lazy resolve the directory to ensure native module is ready
-const getRootDir = () => {
-    const dir = FileSystem.documentDirectory || FileSystem.cacheDirectory;
-
-    if (!dir) {
-        // Fallback for Android Expo Go specifically if everything else failed
-        if (Platform.OS === 'android') {
-            return 'file:///data/user/0/host.exp.exponent/cache/';
-        }
-        return '/tmp/'; // Web/other fallback
-    }
-    return dir;
-};
-
-export const getFilesDirectory = () => {
-    const root = getRootDir();
-    return root ? `${root}files/` : null;
+/**
+ * Get the local file URI for a given filename
+ * @param filename The name of the file
+ * @returns The local file URI
+ */
+export function getLocalUri(filename: string): string {
+    return `${FileSystem.documentDirectory}${filename}`;
 }
 
-export const ensureDirectoryExists = async () => {
-    const dir = getFilesDirectory();
-    if (!dir) return; // Can't do anything if no root
-    if (Platform.OS === 'web') return;
-
+/**
+ * Check if a file exists locally
+ * @param filename The name of the file to check
+ * @returns Promise<boolean> True if the file exists, false otherwise
+ */
+export async function checkFileExists(filename: string): Promise<boolean> {
     try {
-        const dirInfo = await FileSystem.getInfoAsync(dir);
-        if (!dirInfo.exists) {
-            await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-        }
-    } catch (e) {
-        console.warn('ensureDirectoryExists error:', e);
-    }
-};
-export const getLocalUri = (filename: string) => {
-    const dir = getFilesDirectory();
-    // Expo FileSystem handles most characters fine, but we should ensure it's a valid URI part
-    // Using encodeURIComponent only on the filename but sometimes it causes issues with Ethiopian chars in WebView
-    // Let's keep it simple as FileSystem.downloadAsync uses the raw string usually
-    return dir ? dir + filename : null;
-};
-
-export const checkFileExists = async (filename: string): Promise<boolean> => {
-    const dir = getFilesDirectory();
-    if (!dir) return false;
-    try {
-        const uri = getLocalUri(filename);
-        if (!uri) return false;
-        const fileInfo = await FileSystem.getInfoAsync(uri);
+        const fileUri = getLocalUri(filename);
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
         return fileInfo.exists;
-    } catch (e) {
-        console.log('Error checking file existence:', e);
+    } catch (error) {
+        console.error('Error checking file existence:', error);
         return false;
     }
-};
+}
 
-export const downloadFile = async (url: string, filename: string): Promise<string> => {
-    if (Platform.OS === 'web') {
-        // On web, we can't save to file system accessibly for Audio player in the same way.
-        // We will return the remote URL so it 'looks' downloaded or just fail gracefully.
-        // For this app's requirement "Play after download", on Web we might just stream it.
-        // But let's try to support "fake" download for UI testing.
-        console.warn('Download on web: returning remote URL');
-        return url;
-    }
-    // Ensure directory exists first, which checks root availability
-    await ensureDirectoryExists();
-
-    const fileUri = getLocalUri(filename);
-    if (!fileUri) {
-        // Only throw here if we really can't get a path
-        throw new Error(`Document directory is not available. Platform: ${Platform.OS}.`);
-    }
-    console.log(`Attempting to download ${url} to ${fileUri}`);
+/**
+ * Download a file from a remote URL to local storage
+ * @param remoteUrl The remote URL to download from
+ * @param filename The name to save the file as
+ * @returns Promise<string> The local file URI
+ */
+export async function downloadFile(remoteUrl: string, filename: string): Promise<string> {
     try {
-        const downloadRes = await FileSystem.downloadAsync(url, fileUri);
-        console.log('Download finished:', downloadRes);
-        if (downloadRes.status !== 200) {
-            throw new Error(`Download failed with status ${downloadRes.status}`);
-        }
-        return downloadRes.uri;
+        const localUri = getLocalUri(filename);
+        const downloadResult = await FileSystem.downloadAsync(remoteUrl, localUri);
+        return downloadResult.uri;
     } catch (error) {
-        console.error('FileSystem download error:', error);
+        console.error('Error downloading file:', error);
         throw error;
     }
-};
+}
 
-export const deleteFile = async (filename: string) => {
-    const uri = getLocalUri(filename);
-    if (uri) {
-        await FileSystem.deleteAsync(uri, { idempotent: true });
+/**
+ * Delete a local file
+ * @param filename The name of the file to delete
+ * @returns Promise<void>
+ */
+export async function deleteFile(filename: string): Promise<void> {
+    try {
+        const fileUri = getLocalUri(filename);
+        await FileSystem.deleteAsync(fileUri, { idempotent: true });
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get information about a local file
+ * @param filename The name of the file
+ * @returns Promise<FileSystem.FileInfo> File information
+ */
+export async function getFileInfo(filename: string): Promise<FileSystem.FileInfo> {
+    try {
+        const fileUri = getLocalUri(filename);
+        return await FileSystem.getInfoAsync(fileUri);
+    } catch (error) {
+        console.error('Error getting file info:', error);
+        throw error;
     }
 }

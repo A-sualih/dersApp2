@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 14.2.1"
+    "version": ">= 14.2.1",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,17 +9,21 @@
       "distribution": "internal",
       "channel": "development"
     },
-    "preview": {
+    "preview-simple": {
       "android": {
         "buildType": "apk"
       },
       "channel": "preview"
     },
     "production": {
+      "android": {
+        "buildType": "apk"
+      },
       "channel": "production"
     }
   },
   "submit": {
+    "preview": {},
     "production": {}
   }
 }
