@@ -1,39 +1,46 @@
 import { Asset } from 'expo-asset';
 
-// Import PDF - ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ
-const pdfAsset = require('../../assets/media/pdf/خذ عقيدتك من الكتاب والسنة.pdf');
+// Import PDF - አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ
+const pdfAsset = require('../../assets/media/pdf/አቂደቱ ጡሃዉያ.pdf');
 
-// Import audio files (25 files) - ኹዝ አቂዳ (sorted by number 001-025)
+// Import audio files (32 files) - አቂደቱ ጡሃውያ (sorted by number 1-32)
 const audioAssets = [
-  require('../../assets/media/audio/خذ عقيدتك 001 (1).mp3'),     // 001
-  require('../../assets/media/audio/خذ عقيدة 002.mp3'),          // 002
-  require('../../assets/media/audio/خذ عقيدة 003(2).mp3'),       // 003
-  require('../../assets/media/audio/خذ عقيدة 004.mp3'),          // 004
-  require('../../assets/media/audio/👈_خذ عقيدة 005.mp3'),       // 005
-  require('../../assets/media/audio/خذ عقيدة  006.mp3'),         // 006
-  require('../../assets/media/audio/خذ عقيدة 007(2).mp3'),       // 007
-  require('../../assets/media/audio/_خذ عقيدة 008.mp3'),         // 008
-  require('../../assets/media/audio/خذ عقيدة 009.mp3'),          // 009
-  require('../../assets/media/audio/خذ عقيدة  10.mp3'),          // 010
-  require('../../assets/media/audio/خذ عقيده 11.mp3'),           // 011
-  require('../../assets/media/audio/خذ عقيدة 12.mp3'),           // 012
-  require('../../assets/media/audio/خذ عقيده 13.mp3'),           // 013
-  require('../../assets/media/audio/خذ عقيده  14.mp3'),          // 014
-  require('../../assets/media/audio/خذ عقيده  15.mp3'),          // 015
-  require('../../assets/media/audio/خذ عقيدة 16.mp3'),           // 016
-  require('../../assets/media/audio/خذ عقيده 17.mp3'),           // 017
-  require('../../assets/media/audio/خذ عقيده 18.mp3'),           // 018
-  require('../../assets/media/audio/خذ عقيده 19.mp3'),           // 019
-  require('../../assets/media/audio/_خذ عقيده 20.mp3'),          // 020
-  require('../../assets/media/audio/🔥 خذ عقيده 21.mp3'),        // 021
-  require('../../assets/media/audio/خذ عقيدة 22.mp3'),           // 022
-  require('../../assets/media/audio/خذ عقيده 23.mp3'),           // 023
-  require('../../assets/media/audio/خذ عقيده 24.mp3'),           // 024
-  require('../../assets/media/audio/خذ عقيدة 25.mp3'),           // 025
+  require('../../assets/media/audio/አቂደቱ ጡሐውያ 1.mp3'),          // 001
+  require('../../assets/media/audio/አቂደቱ ጦሃውያ 2.mp3'),          // 002
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 3.mp3'),          // 003
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 4.mp3'),          // 004
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 5.mp3'),          // 005
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 6.mp3'),          // 006
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 7.mp3'),          // 007
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 8.mp3'),          // 008
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 9.mp3'),          // 009
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 10.mp3'),         // 010
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 11.mp3'),         // 011
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 12.mp3'),         // 012
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 13.mp3'),         // 013
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 14.mp3'),         // 014
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 15.mp3'),         // 015
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 16.mp3'),         // 016
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 17.mp3'),         // 017
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 18.mp3'),         // 018
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 19.mp3'),         // 019
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 20.mp3'),         // 020
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 21.mp3'),         // 021
+  require('../../assets/media/audio/አቂደቱ ጡሃዉያ 22.mp3'),         // 022
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 23.mp3'),         // 023
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 24.mp3'),         // 024
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 25.mp3'),         // 025
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 26.mp3'),         // 026
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 27.mp3'),         // 027
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 28.mp3'),         // 028
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 29.mp3'),         // 029
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 30.mp3'),         // 030
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 31.mp3'),         // 031
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 32.mp3'),         // 032
 ];
 
 /**
- * Get the URI for a bundled audio file by part number (1-25)
+ * Get the URI for a bundled audio file by part number (1-32)
  * In production builds, ensures the asset is downloaded before returning URI
  */
 export async function getAudioUri(partNumber: number): Promise<string> {
@@ -134,7 +141,7 @@ export async function preloadAllAssets(): Promise<void> {
 }
 
 /**
- * Get all audio URIs (1-25) - returns empty strings until assets are loaded
+ * Get all audio URIs (1-32) - returns empty strings until assets are loaded
  */
 export function getAllAudioUrisSync(): string[] {
   return audioAssets.map((asset) => {

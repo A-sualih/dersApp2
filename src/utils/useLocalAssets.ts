@@ -2,93 +2,114 @@ import { Asset } from 'expo-asset';
 import { useEffect, useState } from 'react';
 
 // Import all local assets statically (Metro requires this)
-const pdfAsset = require('../../assets/media/pdf/خذ عقيدتك من الكتاب والسنة.pdf');
+const pdfAsset = require('../../assets/media/pdf/አቂደቱ ጡሃዉያ.pdf');
 
-// Static imports for all audio files - ኹዝ አቂዳ (sorted by number 001-025)
+// Static imports for all audio files - አቂደቱ ጡሃውያ (sorted by number 1-32)
 const audioModules = [
-  require('../../assets/media/audio/خذ عقيدتك 001 (1).mp3'),     // 001
-  require('../../assets/media/audio/خذ عقيدة 002.mp3'),          // 002
-  require('../../assets/media/audio/خذ عقيدة 003(2).mp3'),       // 003
-  require('../../assets/media/audio/خذ عقيدة 004.mp3'),          // 004
-  require('../../assets/media/audio/👈_خذ عقيدة 005.mp3'),       // 005
-  require('../../assets/media/audio/خذ عقيدة  006.mp3'),         // 006
-  require('../../assets/media/audio/خذ عقيدة 007(2).mp3'),       // 007
-  require('../../assets/media/audio/_خذ عقيدة 008.mp3'),         // 008
-  require('../../assets/media/audio/خذ عقيدة 009.mp3'),          // 009
-  require('../../assets/media/audio/خذ عقيدة  10.mp3'),          // 010
-  require('../../assets/media/audio/خذ عقيده 11.mp3'),           // 011
-  require('../../assets/media/audio/خذ عقيدة 12.mp3'),           // 012
-  require('../../assets/media/audio/خذ عقيده 13.mp3'),           // 013
-  require('../../assets/media/audio/خذ عقيده  14.mp3'),          // 014
-  require('../../assets/media/audio/خذ عقيده  15.mp3'),          // 015
-  require('../../assets/media/audio/خذ عقيدة 16.mp3'),           // 016
-  require('../../assets/media/audio/خذ عقيده 17.mp3'),           // 017
-  require('../../assets/media/audio/خذ عقيده 18.mp3'),           // 018
-  require('../../assets/media/audio/خذ عقيده 19.mp3'),           // 019
-  require('../../assets/media/audio/_خذ عقيده 20.mp3'),          // 020
-  require('../../assets/media/audio/🔥 خذ عقيده 21.mp3'),        // 021
-  require('../../assets/media/audio/خذ عقيدة 22.mp3'),           // 022
-  require('../../assets/media/audio/خذ عقيده 23.mp3'),           // 023
-  require('../../assets/media/audio/خذ عقيده 24.mp3'),           // 024
-  require('../../assets/media/audio/خذ عقيدة 25.mp3'),           // 025
+  require('../../assets/media/audio/አቂደቱ ጡሐውያ 1.mp3'),          // 001
+  require('../../assets/media/audio/አቂደቱ ጦሃውያ 2.mp3'),          // 002
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 3.mp3'),          // 003
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 4.mp3'),          // 004
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 5.mp3'),          // 005
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 6.mp3'),          // 006
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 7.mp3'),          // 007
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 8.mp3'),          // 008
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 9.mp3'),          // 009
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 10.mp3'),         // 010
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 11.mp3'),         // 011
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 12.mp3'),         // 012
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 13.mp3'),         // 013
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 14.mp3'),         // 014
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 15.mp3'),         // 015
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 16.mp3'),         // 016
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 17.mp3'),         // 017
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 18.mp3'),         // 018
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 19.mp3'),         // 019
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 20.mp3'),         // 020
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 21.mp3'),         // 021
+  require('../../assets/media/audio/አቂደቱ ጡሃዉያ 22.mp3'),         // 022
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 23.mp3'),         // 023
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 24.mp3'),         // 024
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 25.mp3'),         // 025
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 26.mp3'),         // 026
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 27.mp3'),         // 027
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 28.mp3'),         // 028
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 29.mp3'),         // 029
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 30.mp3'),         // 030
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 31.mp3'),         // 031
+  require('../../assets/media/audio/አቂደቱ ጡሃውያ 32.mp3'),         // 032
 ];
 
-// Audio file names for mapping (sorted by number 001-025)
+// Audio file names for mapping (sorted by number 1-32)
 const audioFileNames = [
-  'خذ عقيدتك 001 (1).mp3',     // 001
-  'خذ عقيدة 002.mp3',          // 002
-  'خذ عقيدة 003(2).mp3',       // 003
-  'خذ عقيدة 004.mp3',          // 004
-  '👈_خذ عقيدة 005.mp3',       // 005
-  'خذ عقيدة  006.mp3',         // 006
-  'خذ عقيدة 007(2).mp3',       // 007
-  '_خذ عقيدة 008.mp3',         // 008
-  'خذ عقيدة 009.mp3',          // 009
-  'خذ عقيدة  10.mp3',          // 010
-  'خذ عقيده 11.mp3',           // 011
-  'خذ عقيدة 12.mp3',           // 012
-  'خذ عقيده 13.mp3',           // 013
-  'خذ عقيده  14.mp3',          // 014
-  'خذ عقيده  15.mp3',          // 015
-  'خذ عقيدة 16.mp3',           // 016
-  'خذ عقيده 17.mp3',           // 017
-  'خذ عقيده 18.mp3',           // 018
-  'خذ عقيده 19.mp3',           // 019
-  '_خذ عقيده 20.mp3',          // 020
-  '🔥 خذ عقيده 21.mp3',        // 021
-  'خذ عقيدة 22.mp3',           // 022
-  'خذ عقيده 23.mp3',           // 023
-  'خذ عقيده 24.mp3',           // 024
-  'خذ عقيدة 25.mp3',           // 025
+  'አቂደቱ ጡሐውያ 1.mp3',          // 001
+  'አቂደቱ ጦሃውያ 2.mp3',          // 002
+  'አቂደቱ ጡሃውያ 3.mp3',          // 003
+  'አቂደቱ ጡሃውያ 4.mp3',          // 004
+  'አቂደቱ ጡሃውያ 5.mp3',          // 005
+  'አቂደቱ ጡሃውያ 6.mp3',          // 006
+  'አቂደቱ ጡሃውያ 7.mp3',          // 007
+  'አቂደቱ ጡሃውያ 8.mp3',          // 008
+  'አቂደቱ ጡሃውያ 9.mp3',          // 009
+  'አቂደቱ ጡሃውያ 10.mp3',         // 010
+  'አቂደቱ ጡሃውያ 11.mp3',         // 011
+  'አቂደቱ ጡሃውያ 12.mp3',         // 012
+  'አቂደቱ ጡሃውያ 13.mp3',         // 013
+  'አቂደቱ ጡሃውያ 14.mp3',         // 014
+  'አቂደቱ ጡሃውያ 15.mp3',         // 015
+  'አቂደቱ ጡሃውያ 16.mp3',         // 016
+  'አቂደቱ ጡሃውያ 17.mp3',         // 017
+  'አቂደቱ ጡሃውያ 18.mp3',         // 018
+  'አቂደቱ ጡሃውያ 19.mp3',         // 019
+  'አቂደቱ ጡሃውያ 20.mp3',         // 020
+  'አቂደቱ ጡሃውያ 21.mp3',         // 021
+  'አቂደቱ ጡሃዉያ 22.mp3',         // 022
+  'አቂደቱ ጡሃውያ 23.mp3',         // 023
+  'አቂደቱ ጡሃውያ 24.mp3',         // 024
+  'አቂደቱ ጡሃውያ 25.mp3',         // 025
+  'አቂደቱ ጡሃውያ 26.mp3',         // 026
+  'አቂደቱ ጡሃውያ 27.mp3',         // 027
+  'አቂደቱ ጡሃውያ 28.mp3',         // 028
+  'አቂደቱ ጡሃውያ 29.mp3',         // 029
+  'አቂደቱ ጡሃውያ 30.mp3',         // 030
+  'አቂደቱ ጡሃውያ 31.mp3',         // 031
+  'አቂደቱ ጡሃውያ 32.mp3',         // 032
 ];
 
-// Sequential display names (1-25 based on original numbers)
+// Sequential display names (1-32 based on available numbers)
 const displayNames = [
-  'ኹዝ አቂዳ 001',   // Position 1
-  'ኹዝ አቂዳ 002',   // Position 2
-  'ኹዝ አቂዳ 003',   // Position 3
-  'ኹዝ አቂዳ 004',   // Position 4
-  'ኹዝ አቂዳ 005',   // Position 5
-  'ኹዝ አቂዳ 006',   // Position 6
-  'ኹዝ አቂዳ 007',   // Position 7
-  'ኹዝ አቂዳ 008',   // Position 8
-  'ኹዝ አቂዳ 009',   // Position 9
-  'ኹዝ አቂዳ 010',   // Position 10
-  'ኹዝ አቂዳ 011',   // Position 11
-  'ኹዝ አቂዳ 012',   // Position 12
-  'ኹዝ አቂዳ 013',   // Position 13
-  'ኹዝ አቂዳ 014',   // Position 14
-  'ኹዝ አቂዳ 015',   // Position 15
-  'ኹዝ አቂዳ 016',   // Position 16
-  'ኹዝ አቂዳ 017',   // Position 17
-  'ኹዝ አቂዳ 018',   // Position 18
-  'ኹዝ አቂዳ 019',   // Position 19
-  'ኹዝ አቂዳ 020',   // Position 20
-  'ኹዝ አቂዳ 021',   // Position 21
-  'ኹዝ አቂዳ 022',   // Position 22
-  'ኹዝ አቂዳ 023',   // Position 23
-  'ኹዝ አቂዳ 024',   // Position 24
-  'ኹዝ አቂዳ 025',   // Position 25
+  'አቂደቱ ጡሃውያ 1',   // Position 1
+  'አቂደቱ ጡሃውያ 2',   // Position 2
+  'አቂደቱ ጡሃውያ 3',   // Position 3
+  'አቂደቱ ጡሃውያ 4',   // Position 4
+  'አቂደቱ ጡሃውያ 5',   // Position 5
+  'አቂደቱ ጡሃውያ 6',   // Position 6
+  'አቂደቱ ጡሃውያ 7',   // Position 7
+  'አቂደቱ ጡሃውያ 8',   // Position 8
+  'አቂደቱ ጡሃውያ 9',   // Position 9
+  'አቂደቱ ጡሃውያ 10',   // Position 10
+  'አቂደቱ ጡሃውያ 11',   // Position 11
+  'አቂደቱ ጡሃውያ 12',   // Position 12
+  'አቂደቱ ጡሃውያ 13',   // Position 13
+  'አቂደቱ ጡሃውያ 14',   // Position 14
+  'አቂደቱ ጡሃውያ 15',   // Position 15
+  'አቂደቱ ጡሃውያ 16',   // Position 16
+  'አቂደቱ ጡሃውያ 17',   // Position 17
+  'አቂደቱ ጡሃውያ 18',   // Position 18
+  'አቂደቱ ጡሃውያ 19',   // Position 19
+  'አቂደቱ ጡሃውያ 20',   // Position 20
+  'አቂደቱ ጡሃውያ 21',   // Position 21
+  'አቂደቱ ጡሃውያ 22',   // Position 22
+  'አቂደቱ ጡሃውያ 23',   // Position 23
+  'አቂደቱ ጡሃውያ 24',   // Position 24
+  'አቂደቱ ጡሃውያ 25',   // Position 25
+  'አቂደቱ ጡሃውያ 26',   // Position 26
+  'አቂደቱ ጡሃውያ 27',   // Position 27
+  'አቂደቱ ጡሃውያ 28',   // Position 28
+  'አቂደቱ ጡሃውያ 29',   // Position 29
+  'አቂደቱ ጡሃውያ 30',   // Position 30
+  'አቂደቱ ጡሃውያ 31',   // Position 31
+  'አቂደቱ ጡሃውያ 32',   // Position 32
 ];
 
 // Map modules to asset info
@@ -124,8 +145,8 @@ export const useLocalAssets = () => {
         const pdfAssetObj = Asset.fromModule(pdfAsset);
         const pdfUri = pdfAssetObj.uri || pdfAssetObj.localUri;
         loadedAssets.push({
-          id: 'book-huze-aqida-pdf',
-          name: 'ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ.pdf',
+          id: 'book-aqidatu-tahawiya-pdf',
+          name: 'አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ.pdf',
           localUri: pdfUri,
           type: 'pdf',
         });

@@ -1,164 +1,206 @@
 import { DriveFile } from '../types';
 
-// Generate audio files + PDF using bundled assets - ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ
+// Generate audio files + PDF using bundled assets - አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ
 // Note: URLs will be empty initially and populated when assets are accessed
 export const ALL_AUDIO_FILES: DriveFile[] = [
-  // PDF file - ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ
+  // PDF file - አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ
   {
-    id: 'book-huze-aqida-pdf',
-    name: 'ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ.pdf',
+    id: 'book-aqidatu-tahawiya-pdf',
+    name: 'አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ.pdf',
     type: 'pdf',
     url: '', // Will be populated when accessed
   },
-  // Audio files using bundled assets (25 files) - ኹዝ አቂዳ በኡስታዝ አቡ ሁዘይፋ  
-  // Sorted by sequence 001-025
+  // Audio files using bundled assets (32 files) - አቂደቱ ጡሃውያ በኡስታዝ አቡ ሁዘይፋ  
+  // Sorted by sequence 1-32
   {
     id: 'audio-part-1',
-    name: 'ኹዝ አቂዳ 001',
+    name: 'አቂደቱ ጡሃውያ 1',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-2', 
-    name: 'ኹዝ አቂዳ 002',
+    name: 'አቂደቱ ጡሃውያ 2',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-3',
-    name: 'ኹዝ አቂዳ 003',
+    name: 'አቂደቱ ጡሃውያ 3',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-4',
-    name: 'ኹዝ አቂዳ 004',
+    name: 'አቂደቱ ጡሃውያ 4',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-5',
-    name: 'ኹዝ አቂዳ 005',
+    name: 'አቂደቱ ጡሃውያ 5',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-6',
-    name: 'ኹዝ አቂዳ 006',
+    name: 'አቂደቱ ጡሃውያ 6',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-7',
-    name: 'ኹዝ አቂዳ 007',
+    name: 'አቂደቱ ጡሃውያ 7',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-8',
-    name: 'ኹዝ አቂዳ 008',
+    name: 'አቂደቱ ጡሃውያ 8',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-9',
-    name: 'ኹዝ አቂዳ 009',
+    name: 'አቂደቱ ጡሃውያ 9',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-10',
-    name: 'ኹዝ አቂዳ 010',
+    name: 'አቂደቱ ጡሃውያ 10',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-11',
-    name: 'ኹዝ አቂዳ 011',
+    name: 'አቂደቱ ጡሃውያ 11',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-12',
-    name: 'ኹዝ አቂዳ 012',
+    name: 'አቂደቱ ጡሃውያ 12',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-13',
-    name: 'ኹዝ አቂዳ 013',
+    name: 'አቂደቱ ጡሃውያ 13',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-14',
-    name: 'ኹዝ አቂዳ 014',
+    name: 'አቂደቱ ጡሃውያ 14',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-15',
-    name: 'ኹዝ አቂዳ 015',
+    name: 'አቂደቱ ጡሃውያ 15',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-16',
-    name: 'ኹዝ አቂዳ 016',
+    name: 'አቂደቱ ጡሃውያ 16',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-17',
-    name: 'ኹዝ አቂዳ 017',
+    name: 'አቂደቱ ጡሃውያ 17',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-18',
-    name: 'ኹዝ አቂዳ 018',
+    name: 'አቂደቱ ጡሃውያ 18',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-19',
-    name: 'ኹዝ አቂዳ 019',
+    name: 'አቂደቱ ጡሃውያ 19',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-20',
-    name: 'ኹዝ አቂዳ 020',
+    name: 'አቂደቱ ጡሃውያ 20',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-21',
-    name: 'ኹዝ አቂዳ 021',
+    name: 'አቂደቱ ጡሃውያ 21',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-22',
-    name: 'ኹዝ አቂዳ 022',
+    name: 'አቂደቱ ጡሃውያ 22',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-23',
-    name: 'ኹዝ አቂዳ 023',
+    name: 'አቂደቱ ጡሃውያ 23',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-24',
-    name: 'ኹዝ አቂዳ 024',
+    name: 'አቂደቱ ጡሃውያ 24',
     type: 'audio',
     url: '',
   },
   {
     id: 'audio-part-25',
-    name: 'ኹዝ አቂዳ 025',
+    name: 'አቂደቱ ጡሃውያ 25',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-26',
+    name: 'አቂደቱ ጡሃውያ 26',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-27',
+    name: 'አቂደቱ ጡሃውያ 27',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-28',
+    name: 'አቂደቱ ጡሃውያ 28',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-29',
+    name: 'አቂደቱ ጡሃውያ 29',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-30',
+    name: 'አቂደቱ ጡሃውያ 30',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-31',
+    name: 'አቂደቱ ጡሃውያ 31',
+    type: 'audio',
+    url: '',
+  },
+  {
+    id: 'audio-part-32',
+    name: 'አቂደቱ ጡሃውያ 32',
     type: 'audio',
     url: '',
   },
